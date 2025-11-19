@@ -185,10 +185,10 @@ const CardCarousel = () => {
                   }}
                 >
                   <div className="relative">
-                    <AtlasCard
+                    {/* <AtlasCard
                       address={card.smartAccount}
                       domain={card.domain || `${card.cardName}.com`}
-                    />
+                    /> */}
                   </div>
                 </div>
               );

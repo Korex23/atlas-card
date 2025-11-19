@@ -1,8 +1,8 @@
-import AtlasCard from "@/components/general/AtlasCard";
 import CtaLine from "@/components/general/CtaCard";
 import BalanceSection from "@/components/general/BalanceSection";
 import RecentTransactions from "@/components/general/RecentTransactions";
-import CardCarousel from "@/components/general/Carousel";
+import AtlasCard from "@/components/general/MyCard";
+import MyApps from "@/components/general/MyApps";
 
 export default function Home() {
   return (
@@ -11,16 +11,12 @@ export default function Home() {
         <div className="flex lg:flex-row flex-col gap-10">
           <div className="lg:w-[70vw] w-full">
             <BalanceSection />
-            {/* <AtlasCard
-              address="0x1234567890123456789012345678901234567890"
-              domain="example.com"
-            /> */}
-            <CardCarousel />
+            <AtlasCard />
 
             <CtaLine />
           </div>
           <div className="lg:w-[80%]">
-            <RecentTransactions />
+            <MyApps />
           </div>
         </div>
       </main>

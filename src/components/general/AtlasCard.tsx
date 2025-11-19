@@ -6,6 +6,7 @@ import atlas from "@/assets/atlas.webp";
 import logo from "@/assets/logo.png";
 import topglow from "@/assets/top-glow.png";
 import bottomglow from "@/assets/bottom-glow.png";
+import { useCardCreation } from "@/context/test/CardCreationContext";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"] });
 

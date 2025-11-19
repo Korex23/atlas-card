@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { CardCreationProvider } from "@/context/CardCreationContext";
+import { CardCreationProvider } from "@/context/test/CardCreationContext";
+import { Providers } from "@/providers/Providers";
+import RainbowKitContext from "@/context/RainbowkitContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -21,9 +23,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased bg-black`}>
-        <CardCreationProvider>
-          <main>{children}</main>
-        </CardCreationProvider>
+        <Providers>
+          <RainbowKitContext>
+            <CardCreationProvider>
+              <main>{children}</main>
+            </CardCreationProvider>
+          </RainbowKitContext>
+        </Providers>
       </body>
     </html>
   );

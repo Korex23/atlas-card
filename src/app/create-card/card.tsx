@@ -9,7 +9,7 @@ import addpasskey from "@/components/icons/svgs/add-passkey.svg";
 import addcard from "@/components/icons/svgs/add-card.svg";
 import { Button } from "@/components/ui/button";
 import AtlasCard from "@/components/general/AtlasCard";
-import { useCardCreation } from "@/context/CardCreationContext";
+import { useCardCreation } from "@/context/test/CardCreationContext";
 
 export default function CreateCard() {
   const steps = ["deploy", "passkey", "add passkey", "mint"];
