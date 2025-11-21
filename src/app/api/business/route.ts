@@ -8,10 +8,28 @@ export async function POST(req: NextRequest) {
     await dbConnect();
 
     const body = await req.json();
-    const { name, wallet, description, logo, banner } = body;
+    const {
+      name,
+      wallet,
+      description,
+      logo,
+      banner,
+      callbackUrl,
+      country,
+      delegationUrl,
+    } = body;
 
     // Validation
-    if (!name || !wallet || !description || !logo || !banner) {
+    if (
+      !name ||
+      !wallet ||
+      !description ||
+      !logo ||
+      !banner ||
+      !callbackUrl ||
+      !country ||
+      !delegationUrl
+    ) {
       return NextResponse.json(
         { error: "All fields are required" },
         { status: 400 }
@@ -22,6 +40,29 @@ export async function POST(req: NextRequest) {
     if (!/^0x[a-fA-F0-9]{40}$/i.test(wallet)) {
       return NextResponse.json(
         { error: "Invalid wallet address format" },
+        { status: 400 }
+      );
+    }
+
+    // Validate callback URL format
+    try {
+      const url = new URL(callbackUrl);
+      if (!url.protocol.startsWith("http")) {
+        throw new Error("Invalid protocol");
+      }
+    } catch (error) {
+      return NextResponse.json(
+        {
+          error: "Invalid callback URL format. Must be a valid HTTP/HTTPS URL",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate country is not empty
+    if (country.trim().length === 0) {
+      return NextResponse.json(
+        { error: "Please select a valid country" },
         { status: 400 }
       );
     }
@@ -45,10 +86,24 @@ export async function POST(req: NextRequest) {
       description,
       logo,
       banner,
+      callbackUrl,
+      country,
+      delegationUrl,
     });
 
+    // Generate auth URL
+    const origin =
+      req.headers.get("origin") ||
+      process.env.NEXT_PUBLIC_APP_URL ||
+      "http://localhost:3000";
+    const authUrl = `${origin}/apps/add-app/${business.wallet}`;
+
     return NextResponse.json(
-      { message: "Business created successfully", business },
+      {
+        message: "Business created successfully",
+        business,
+        authUrl,
+      },
       { status: 201 }
     );
   } catch (error) {

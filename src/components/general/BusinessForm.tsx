@@ -231,6 +231,7 @@ const BusinessForm = () => {
     banner: "",
     callbackUrl: "",
     country: "",
+    delegationUrl: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -359,6 +360,7 @@ const BusinessForm = () => {
       banner: "",
       callbackUrl: "",
       country: "",
+      delegationUrl: "",
     });
     setSubmitStatus({ type: null, message: "" });
     setAuthUrl("");
@@ -634,6 +636,19 @@ const BusinessForm = () => {
               <p className="text-xs text-neutral-400">
                 URL where users will be redirected after authentication
               </p>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Delegation URL *</Label>
+              <Input
+                name="callbackUrl"
+                value={form.delegationUrl}
+                onChange={handleChange}
+                placeholder="https://yourdomain.com/callback"
+                type="url"
+                className="bg-neutral-950 border-neutral-700 focus:border-yellow-600 focus:ring-yellow-600"
+                required
+                disabled={isSubmitting}
+              />
             </div>
 
             {/* Country Dropdown */}

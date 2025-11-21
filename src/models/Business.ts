@@ -7,6 +7,7 @@ export interface IBusiness extends Document {
   logo: string;
   banner: string;
   callbackUrl: string;
+  delegationUrl: string;
   country: string;
   createdAt: Date;
   updatedAt: Date;
@@ -44,6 +45,10 @@ const BusinessSchema = new Schema<IBusiness>(
       required: true,
     },
     country: {
+      type: String,
+      required: true,
+    },
+    delegationUrl: {
       type: String,
       required: true,
     },
