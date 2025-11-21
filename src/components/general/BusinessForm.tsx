@@ -640,7 +640,7 @@ const BusinessForm = () => {
             <div className="space-y-2">
               <Label className="text-sm font-medium">Delegation URL *</Label>
               <Input
-                name="callbackUrl"
+                name="delegationUrl"
                 value={form.delegationUrl}
                 onChange={handleChange}
                 placeholder="https://yourdomain.com/callback"
