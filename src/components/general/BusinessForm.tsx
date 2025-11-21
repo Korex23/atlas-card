@@ -6,9 +6,219 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Upload, X, Image, Loader2, CheckCircle2 } from "lucide-react";
+import {
+  Upload,
+  X,
+  Image,
+  Loader2,
+  CheckCircle2,
+  Copy,
+  ExternalLink,
+} from "lucide-react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const COUNTRIES = [
+  "Afghanistan",
+  "Albania",
+  "Algeria",
+  "Andorra",
+  "Angola",
+  "Argentina",
+  "Armenia",
+  "Australia",
+  "Austria",
+  "Azerbaijan",
+  "Bahamas",
+  "Bahrain",
+  "Bangladesh",
+  "Barbados",
+  "Belarus",
+  "Belgium",
+  "Belize",
+  "Benin",
+  "Bhutan",
+  "Bolivia",
+  "Bosnia and Herzegovina",
+  "Botswana",
+  "Brazil",
+  "Brunei",
+  "Bulgaria",
+  "Burkina Faso",
+  "Burundi",
+  "Cambodia",
+  "Cameroon",
+  "Canada",
+  "Cape Verde",
+  "Central African Republic",
+  "Chad",
+  "Chile",
+  "China",
+  "Colombia",
+  "Comoros",
+  "Congo",
+  "Costa Rica",
+  "Croatia",
+  "Cuba",
+  "Cyprus",
+  "Czech Republic",
+  "Denmark",
+  "Djibouti",
+  "Dominica",
+  "Dominican Republic",
+  "East Timor",
+  "Ecuador",
+  "Egypt",
+  "El Salvador",
+  "Equatorial Guinea",
+  "Eritrea",
+  "Estonia",
+  "Ethiopia",
+  "Fiji",
+  "Finland",
+  "France",
+  "Gabon",
+  "Gambia",
+  "Georgia",
+  "Germany",
+  "Ghana",
+  "Greece",
+  "Grenada",
+  "Guatemala",
+  "Guinea",
+  "Guinea-Bissau",
+  "Guyana",
+  "Haiti",
+  "Honduras",
+  "Hungary",
+  "Iceland",
+  "India",
+  "Indonesia",
+  "Iran",
+  "Iraq",
+  "Ireland",
+  "Israel",
+  "Italy",
+  "Ivory Coast",
+  "Jamaica",
+  "Japan",
+  "Jordan",
+  "Kazakhstan",
+  "Kenya",
+  "Kiribati",
+  "North Korea",
+  "South Korea",
+  "Kuwait",
+  "Kyrgyzstan",
+  "Laos",
+  "Latvia",
+  "Lebanon",
+  "Lesotho",
+  "Liberia",
+  "Libya",
+  "Liechtenstein",
+  "Lithuania",
+  "Luxembourg",
+  "Macedonia",
+  "Madagascar",
+  "Malawi",
+  "Malaysia",
+  "Maldives",
+  "Mali",
+  "Malta",
+  "Marshall Islands",
+  "Mauritania",
+  "Mauritius",
+  "Mexico",
+  "Micronesia",
+  "Moldova",
+  "Monaco",
+  "Mongolia",
+  "Montenegro",
+  "Morocco",
+  "Mozambique",
+  "Myanmar",
+  "Namibia",
+  "Nauru",
+  "Nepal",
+  "Netherlands",
+  "New Zealand",
+  "Nicaragua",
+  "Niger",
+  "Nigeria",
+  "Norway",
+  "Oman",
+  "Pakistan",
+  "Palau",
+  "Panama",
+  "Papua New Guinea",
+  "Paraguay",
+  "Peru",
+  "Philippines",
+  "Poland",
+  "Portugal",
+  "Qatar",
+  "Romania",
+  "Russia",
+  "Rwanda",
+  "Saint Kitts and Nevis",
+  "Saint Lucia",
+  "Saint Vincent and the Grenadines",
+  "Samoa",
+  "San Marino",
+  "Sao Tome and Principe",
+  "Saudi Arabia",
+  "Senegal",
+  "Serbia",
+  "Seychelles",
+  "Sierra Leone",
+  "Singapore",
+  "Slovakia",
+  "Slovenia",
+  "Solomon Islands",
+  "Somalia",
+  "South Africa",
+  "Spain",
+  "Sri Lanka",
+  "Sudan",
+  "Suriname",
+  "Swaziland",
+  "Sweden",
+  "Switzerland",
+  "Syria",
+  "Taiwan",
+  "Tajikistan",
+  "Tanzania",
+  "Thailand",
+  "Togo",
+  "Tonga",
+  "Trinidad and Tobago",
+  "Tunisia",
+  "Turkey",
+  "Turkmenistan",
+  "Tuvalu",
+  "Uganda",
+  "Ukraine",
+  "United Arab Emirates",
+  "United Kingdom",
+  "United States",
+  "Uruguay",
+  "Uzbekistan",
+  "Vanuatu",
+  "Vatican City",
+  "Venezuela",
+  "Vietnam",
+  "Yemen",
+  "Zambia",
+  "Zimbabwe",
+];
 
 const BusinessForm = () => {
   const { address, isConnected } = useAccount();
@@ -19,6 +229,8 @@ const BusinessForm = () => {
     description: "",
     logo: "",
     banner: "",
+    callbackUrl: "",
+    country: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,6 +238,8 @@ const BusinessForm = () => {
     type: "success" | "error" | null;
     message: string;
   }>({ type: null, message: "" });
+  const [authUrl, setAuthUrl] = useState("");
+  const [copied, setCopied] = useState(false);
 
   // Update wallet address when connected
   useEffect(() => {
@@ -46,7 +260,9 @@ const BusinessForm = () => {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -63,6 +279,12 @@ const BusinessForm = () => {
     setForm((prev) => ({ ...prev, [fieldName]: "" }));
   };
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(authUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -75,7 +297,14 @@ const BusinessForm = () => {
     }
 
     // Validate all fields
-    if (!form.name || !form.description || !form.logo || !form.banner) {
+    if (
+      !form.name ||
+      !form.description ||
+      !form.logo ||
+      !form.banner ||
+      !form.callbackUrl ||
+      !form.country
+    ) {
       setSubmitStatus({
         type: "error",
         message: "Please fill in all required fields",
@@ -101,22 +330,16 @@ const BusinessForm = () => {
         throw new Error(data.error || "Failed to submit business information");
       }
 
+      // Generate auth URL
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "";
+      const generatedAuthUrl = `${origin}/apps/add-app/${form.wallet}`;
+      setAuthUrl(generatedAuthUrl);
+
       setSubmitStatus({
         type: "success",
         message: "Business registered successfully!",
       });
-
-      // Reset form after successful submission
-      setTimeout(() => {
-        setForm({
-          name: "",
-          wallet: address || "",
-          description: "",
-          logo: "",
-          banner: "",
-        });
-        setSubmitStatus({ type: null, message: "" });
-      }, 3000);
     } catch (error: any) {
       setSubmitStatus({
         type: "error",
@@ -126,6 +349,104 @@ const BusinessForm = () => {
       setIsSubmitting(false);
     }
   };
+
+  const resetForm = () => {
+    setForm({
+      name: "",
+      wallet: address || "",
+      description: "",
+      logo: "",
+      banner: "",
+      callbackUrl: "",
+      country: "",
+    });
+    setSubmitStatus({ type: null, message: "" });
+    setAuthUrl("");
+  };
+
+  if (authUrl) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="w-full max-w-2xl bg-gradient-to-br from-green-950 to-neutral-900 text-white border-green-700 shadow-2xl">
+          <CardHeader className="border-b border-green-800 pb-6">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-10 h-10 text-green-400" />
+              <div>
+                <CardTitle className="text-2xl font-bold">
+                  Registration Successful!
+                </CardTitle>
+                <p className="text-green-300 text-sm mt-1">
+                  Your business has been registered successfully
+                </p>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-6">
+            <div className="bg-neutral-950 border border-green-700 rounded-lg p-6 space-y-4">
+              <div>
+                <Label className="text-sm font-medium text-green-400">
+                  Business Name
+                </Label>
+                <p className="text-lg font-semibold mt-1">{form.name}</p>
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium text-green-400">
+                  Country
+                </Label>
+                <p className="text-lg mt-1">{form.country}</p>
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium text-green-400">
+                  Authentication URL
+                </Label>
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="flex-1 bg-neutral-900 border border-neutral-700 rounded-lg p-3">
+                    <p className="font-mono text-sm text-green-400 break-all">
+                      {authUrl}
+                    </p>
+                  </div>
+                  <Button
+                    onClick={copyToClipboard}
+                    className="bg-green-600 hover:bg-green-700 shrink-0"
+                    size="icon"
+                  >
+                    {copied ? (
+                      <CheckCircle2 className="w-4 h-4" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
+                <p className="text-xs text-neutral-400 mt-2">
+                  Use this URL to integrate authentication with your app
+                </p>
+              </div>
+
+              <a
+                href={authUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-all hover:shadow-lg hover:shadow-green-600/20"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Open Authentication Page
+              </a>
+            </div>
+
+            <Button
+              onClick={resetForm}
+              variant="outline"
+              className="w-full border-neutral-700 hover:bg-neutral-800 text-white"
+            >
+              Register Another Business
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -138,7 +459,6 @@ const BusinessForm = () => {
             Complete the form below to register your business
           </p>
         </CardHeader>
-
         <CardContent className="pt-6">
           <div className="space-y-6">
             {/* Status Messages */}
@@ -296,6 +616,52 @@ const BusinessForm = () => {
                 required
                 disabled={isSubmitting}
               />
+            </div>
+
+            {/* Callback URL */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Callback URL *</Label>
+              <Input
+                name="callbackUrl"
+                value={form.callbackUrl}
+                onChange={handleChange}
+                placeholder="https://yourdomain.com/callback"
+                type="url"
+                className="bg-neutral-950 border-neutral-700 focus:border-yellow-600 focus:ring-yellow-600"
+                required
+                disabled={isSubmitting}
+              />
+              <p className="text-xs text-neutral-400">
+                URL where users will be redirected after authentication
+              </p>
+            </div>
+
+            {/* Country Dropdown */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Country *</Label>
+              <Select
+                onValueChange={(value) =>
+                  setForm((prev) => ({ ...prev, country: value }))
+                }
+                value={form.country}
+                disabled={isSubmitting}
+              >
+                <SelectTrigger className="bg-neutral-950 border border-neutral-700 text-white focus:border-yellow-600 focus:ring-yellow-600">
+                  <SelectValue placeholder="Select a country" />
+                </SelectTrigger>
+
+                <SelectContent className="bg-neutral-900 border-neutral-700 text-white">
+                  {COUNTRIES.map((country) => (
+                    <SelectItem
+                      key={country}
+                      value={country}
+                      className="text-white focus:bg-neutral-800"
+                    >
+                      {country}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Submit Button */}

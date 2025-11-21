@@ -10,7 +10,7 @@ import { baseSepolia } from "viem/chains";
 const sdk = new PaymentSDK({
   pimlicoApiKey: "pim_NXnPReaRmSZSZ9BfeiEshB",
   mongoUri:
-    "mongodb://mongo:ZsYglTcPTnFWleEOPPQKRwjapCNLA  hSq@yamanote.proxy.rlwy.net:51825/",
+    "mongodb://mongo:ZsYglTcPTnFWleEOPPQKRwjapCNLAhSq@yamanote.proxy.rlwy.net:51825/",
   dbName: "credentials",
   collectionName: "passkeyData",
   chainId: 84532,
@@ -56,6 +56,7 @@ export async function connect() {
     return { success: true, message: "Connected to MongoDB" };
   } catch (error: any) {
     console.error("❌ MongoDB connection failed:", error);
+    // disconnect();
     return {
       success: false,
       error: {
@@ -209,6 +210,39 @@ export async function getBalance(address: Address, token: string = "ETH") {
         details: error.details || error.toString(),
       },
     };
+  }
+}
+
+export async function recoverDelegation(
+  delegation: string,
+  privateKey: string,
+  amount: string
+): Promise<`0x${string}` | null> {
+  try {
+    const cleanDelegation = delegation.trim();
+
+    if (!cleanDelegation) {
+      throw new Error("Delegation string is empty");
+    }
+
+    // Log for debugging
+    console.log("Delegation length:", cleanDelegation.length);
+    console.log(
+      "Delegation preview:",
+      cleanDelegation.substring(0, 50) + "..."
+    );
+
+    const tx = await sdk.redeemDelegation(
+      cleanDelegation,
+      privateKey,
+      "USDC",
+      amount
+    );
+    return tx.hash;
+  } catch (error: any) {
+    console.error("Failed to recover delegation:", error.message || error);
+    console.error("Error stack:", error.stack);
+    return null;
   }
 }
 

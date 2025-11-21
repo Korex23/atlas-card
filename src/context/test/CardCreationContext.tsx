@@ -334,7 +334,7 @@ export const CardCreationProvider: React.FC<{ children: ReactNode }> = ({
       const credentials = {
         address:
           smartAccountAddress ?? ("0x000000000000000000000000" as Address),
-        eoaAddress: generatedAccount.address,
+        eoaAddress: generatedAccount?.address,
         passkeyCredential: {
           id: passkeyCredential.id,
           publicKey: passkeyCredential.publicKey,

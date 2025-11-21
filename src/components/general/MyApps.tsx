@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { X, Shield, Calendar } from "lucide-react";
 import { baseSepolia } from "viem/chains";
-import { parseUnits } from "viem";
+import { parseUnits, toHex } from "viem";
+import { toWebAuthnAccount } from "viem/account-abstraction";
 import { useCardCreation } from "@/context/test/CardCreationContext";
 import { useSession } from "next-auth/react";
 import { DelegationManager } from "@metamask/delegation-toolkit/contracts";
@@ -40,6 +41,7 @@ interface AuthorizedApp {
 
 export default function MyApps() {
   const { data: session } = useSession();
+  const card = session?.cards[0];
   const [authorizedApps, setAuthorizedApps] = useState<AuthorizedApp[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -63,12 +65,25 @@ export default function MyApps() {
         const privateKey = session?.privateKey as `0x${string}`;
         const account = privateKeyToAccount(privateKey);
 
+        const passkeyCredential = card?.passkeyCredential;
+        const webAuthAccount = card?.webAuthnAccount;
+
+        console.log(passkeyCredential);
+        console.log("Real webAuthnAccount", webAuthAccount);
+
+        const webAuthnAccount = toWebAuthnAccount({
+          credential: {
+            id: passkeyCredential.id,
+            publicKey: passkeyCredential.publicKey,
+          },
+        });
+
         const smartAccount = await toMetaMaskSmartAccount({
           client: publicClient as unknown as import("viem").PublicClient,
           implementation: Implementation.Hybrid,
           deployParams: [account.address, [], [], []],
           deploySalt: "0x",
-          signer: { account },
+          signer: { webAuthnAccount, keyId: toHex(passkeyCredential.id) },
         });
 
         setSmartAccount(smartAccount);

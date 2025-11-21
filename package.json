@@ -43,7 +43,7 @@
     "@rainbow-me/rainbowkit": "^2.2.9",
     "@scure/base": "^2.0.0",
     "@tanstack/react-query": "^5.90.9",
-    "atlas-card-sdk": "^1.0.0",
+    "atlas-card-sdk": "^1.0.1",
     "bs58": "^6.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

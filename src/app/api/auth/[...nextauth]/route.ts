@@ -80,19 +80,32 @@ export const authOptions: AuthOptions = {
   session: { strategy: "jwt" },
 
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: User }) {
-      if (!user?.email) return token;
-
+    async jwt({
+      token,
+      user,
+      account,
+    }: {
+      token: JWT;
+      user?: User;
+      account?: any;
+    }) {
       await dbConnect();
 
-      let existing = await UserModel.findOne({ email: user.email });
+      if (user?.email) {
+        token.email = user.email;
+      }
+
+      const email = token.email as string;
+      if (!email) return token;
+
+      let existing = await UserModel.findOne({ email });
 
       if (!existing) {
         const privateKey = generatePrivateKey();
         const encrypted = encryptPrivateKey(privateKey);
 
         existing = await UserModel.create({
-          email: user.email,
+          email,
           encryptedPrivateKey: encrypted,
           cards: [],
         });
